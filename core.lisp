@@ -59,7 +59,7 @@
   (setf *shader* (make-instance 'shaders:opengl-shader
                                 :vert "glsl/model-view-projection.vert"
                                 :frag "glsl/one-texture.frag"))
-  (gl:use-program (slot-value *shader* 'program))
+  (gl:use-program (slot-value *shader* 'shaders::program))
   (let ((view (camera:view-matrix *camera*))
         (projection (m:mperspective (slot-value *camera* 'camera::zoom)
                                     (/ 500 500)
@@ -75,7 +75,7 @@
   (gl:use-program 0))
 
 (defun mainloop ()
-  (sdl2:gl-make-current *window* *opengl-context*)
+  ;; (sdl2:gl-make-current *window* *opengl-context*)
   (init)
   (loop
     (render)
