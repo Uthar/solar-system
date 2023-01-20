@@ -32,7 +32,7 @@
 ;;   (sdl2:gl-swap-window *window*))
 
 (defun render ()
-  (gl:viewport 0 0 200 200)
+  (gl:viewport 0 0 500 500)
   (gl:clear-color 0.2 0.4 0.5 1.0)
   (gl:clear :color-buffer-bit)
   (gl:use-program (slot-value *shader* 'shaders::program))
@@ -40,6 +40,18 @@
                           (slot-value *shader* 'shaders::program)
                           "model")
                          (m:marr (m:meye 4)))
+  (let ((view (camera:view-matrix *camera*))
+        (projection (m:mperspective (slot-value *camera* 'camera::zoom)
+                                    (/ 500 500)
+                                    0.1 100.0)))
+    (gl:uniform-matrix-4fv (gl:get-uniform-location
+                            (slot-value *shader* 'shaders::program)
+                            "view")
+                           (m:marr view))
+    (gl:uniform-matrix-4fv (gl:get-uniform-location
+                            (slot-value *shader* 'shaders::program)
+                            "projection")
+                           (m:marr projection)))
   (gl:bind-vertex-array *sphere*)
   (gl:polygon-mode :front-and-back :line)
   (gl:draw-arrays :triangles 0 (* 3 128))
@@ -58,21 +70,7 @@
   (setf *camera* (camera:camera 0 0 3))
   (setf *shader* (make-instance 'shaders:opengl-shader
                                 :vert "glsl/model-view-projection.vert"
-                                :frag "glsl/one-texture.frag"))
-  (gl:use-program (slot-value *shader* 'shaders::program))
-  (let ((view (camera:view-matrix *camera*))
-        (projection (m:mperspective (slot-value *camera* 'camera::zoom)
-                                    (/ 500 500)
-                                    0.1 100.0)))
-    (gl:uniform-matrix-4fv (gl:get-uniform-location
-                            (slot-value *shader* 'shaders::program)
-                            "view")
-                           (m:marr view))
-    (gl:uniform-matrix-4fv (gl:get-uniform-location
-                            (slot-value *shader* 'shaders::program)
-                            "projection")
-                           (m:marr projection)))
-  (gl:use-program 0))
+                                :frag "glsl/one-texture.frag")))
 
 (defun mainloop ()
   ;; (sdl2:gl-make-current *window* *opengl-context*)
