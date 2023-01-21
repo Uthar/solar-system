@@ -31,6 +31,12 @@
 ;;   (gl:clear :color-buffer-bit)
 ;;   (sdl2:gl-swap-window *window*))
 
+(let ((start   (sb-ext:get-time-of-day)))
+  (defun get-time ()
+    (multiple-value-bind (s us)
+        (sb-ext:get-time-of-day)
+      (- (+ s (/ us 1000000.0d0)) start))))
+
 (defun render ()
   (gl:viewport 0 0 500 500)
   (gl:clear-color 0.2 0.4 0.5 1.0)
@@ -39,7 +45,7 @@
   (gl:uniform-matrix-4fv (gl:get-uniform-location
                           (slot-value *shader* 'shaders::program)
                           "model")
-                         (m:marr (m:meye 4)))
+                         (m:marr (m:mrotation v:+vy+ (sin (get-time)))))
   (let ((view (camera:view-matrix *camera*))
         (projection (m:mperspective (slot-value *camera* 'camera::zoom)
                                     (/ 500 500)
@@ -57,8 +63,7 @@
   (gl:draw-arrays :triangles 0 (* 60 128))
   (gl:bind-vertex-array *sphere*)
   (gl:use-program 0)
-  (sdl2:gl-swap-window *window*)
-  (sleep 0.16))
+  (sdl2:gl-swap-window *window*))
 
 (defvar *sphere* nil)
 (defvar *camera* nil)
