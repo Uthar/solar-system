@@ -31,7 +31,7 @@
           (z (vunit (v- c *center*))))
       (list x y z))))
 
-
+;; TODO(kasper): normal vectors
 (defun make-sphere (precision)
   (loop repeat precision
         for triangles = (list (list (vec3 0 0.5 0)
