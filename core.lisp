@@ -54,7 +54,7 @@
                            (m:marr projection)))
   (gl:bind-vertex-array *sphere*)
   (gl:polygon-mode :front-and-back :line)
-  (gl:draw-arrays :triangles 0 (* 3 128))
+  (gl:draw-arrays :triangles 0 (* 60 128))
   (gl:bind-vertex-array *sphere*)
   (gl:use-program 0)
   (sdl2:gl-swap-window *window*)
