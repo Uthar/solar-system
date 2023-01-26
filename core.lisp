@@ -77,6 +77,7 @@
 
 (defun init ()
   (setf *window* (open-window 500 500))
+  (gl:enable :depth-test)
   (setf *sphere* (sphere:load-sphere (sphere:make-sphere 5)))
   (setf *camera* (camera:camera 0 0 3))
   (setf *shader* (make-instance 'shaders:opengl-shader
