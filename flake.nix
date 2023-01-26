@@ -19,6 +19,7 @@
                 _3d-quaternions
                 cl-opengl
                 sdl2
+                pngload
               ]))
             ];
           };

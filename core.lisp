@@ -6,7 +6,8 @@
    (:v :3d-vectors)
    (:shaders :solar-system/shaders)
    (:sphere :solar-system/sphere)
-   (:camera :solar-system/camera)))
+   (:camera :solar-system/camera)
+   (:cubemap :solar-system/cubemap)))
 
 (in-package solar-system/core)
 
@@ -31,7 +32,7 @@
 ;;   (gl:clear :color-buffer-bit)
 ;;   (sdl2:gl-swap-window *window*))
 
-(let ((start   (sb-ext:get-time-of-day)))
+(let ((start (sb-ext:get-time-of-day)))
   (defun get-time ()
     (multiple-value-bind (s us)
         (sb-ext:get-time-of-day)
@@ -40,12 +41,15 @@
 (defun render ()
   (gl:viewport 0 0 500 500)
   (gl:clear-color 0.2 0.4 0.5 1.0)
-  (gl:clear :color-buffer-bit)
+  (gl:clear :color-buffer-bit :depth-buffer-bit)
   (gl:use-program (slot-value *shader* 'shaders::program))
+  (gl:bind-texture :texture-cube-map (slot-value *cubemap* 'cubemap::texture))
   (gl:uniform-matrix-4fv (gl:get-uniform-location
                           (slot-value *shader* 'shaders::program)
                           "model")
-                         (m:marr (m:mrotation v:+vy+ (sin (get-time)))))
+                         (m:marr (m:mrotation v:+vy+ (let ((time (get-time)))
+                                                       (* 30
+                                                          (camera::rad time))))))
   (let ((view (camera:view-matrix *camera*))
         (projection (m:mperspective (slot-value *camera* 'camera::zoom)
                                     (/ 500 500)
@@ -59,23 +63,32 @@
                             "projection")
                            (m:marr projection)))
   (gl:bind-vertex-array *sphere*)
-  (gl:polygon-mode :front-and-back :line)
-  (gl:draw-arrays :triangles 0 (* 60 128))
+  (gl:polygon-mode :front-and-back :fill)
+  (gl:draw-arrays :triangles 0 (* 3 (length (sphere:make-sphere 5))))
   (gl:bind-vertex-array *sphere*)
+  (gl:bind-texture :texture-cube-map 0)
   (gl:use-program 0)
   (sdl2:gl-swap-window *window*))
 
 (defvar *sphere* nil)
 (defvar *camera* nil)
 (defvar *shader* nil)
+(defvar *cubemap* nil)
 
 (defun init ()
   (setf *window* (open-window 500 500))
-  (setf *sphere* (sphere:load-sphere (sphere:make-sphere 3)))
+  (setf *sphere* (sphere:load-sphere (sphere:make-sphere 5)))
   (setf *camera* (camera:camera 0 0 3))
   (setf *shader* (make-instance 'shaders:opengl-shader
                                 :vert "glsl/model-view-projection.vert"
-                                :frag "glsl/one-texture.frag")))
+                                :frag "glsl/cubemap.frag"))
+  (setf *cubemap* (make-instance 'cubemap::cubemap
+                                 :posx "./posx.png"
+                                 :posy "./posy.png"
+                                 :posz "./posz.png"
+                                 :negx "./negx.png"
+                                 :negy "./negy.png"
+                                 :negz "./negz.png")))
 
 (defun mainloop ()
   ;; (sdl2:gl-make-current *window* *opengl-context*)
