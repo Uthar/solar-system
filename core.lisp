@@ -49,6 +49,8 @@
                           "model")
                          (m:marr
                           (m:m*
+                           (m:mtranslation (v:vec3 0.6 0 0))
+                           (m:mscaling (v:vec3 0.5 0.5 0.5))
                            (m:mrotation v:+vx+ (camera::rad 30))
                            (m:mrotation v:+vy+ (let ((time (get-time)))
                                                  (* 30
@@ -68,7 +70,7 @@
   (gl:bind-vertex-array *sphere*)
   (gl:polygon-mode :front-and-back :fill)
   (gl:draw-arrays :triangles 0 (* 3 (length (sphere:make-sphere 5))))
-  (gl:bind-vertex-array *sphere*)
+  (gl:bind-vertex-array 0)
   (gl:bind-texture :texture-cube-map 0)
   (gl:use-program 0)
   (sdl2:gl-swap-window *window*))
