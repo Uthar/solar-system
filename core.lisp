@@ -49,7 +49,7 @@
                           "model")
                          (m:marr
                           (m:m*
-                           (m:mtranslation (v:vec3 0.6 0 0))
+                           (m:mtranslation (v:vec3 0.7 0 0))
                            (m:mscaling (v:vec3 0.5 0.5 0.5))
                            (m:mrotation v:+vx+ (camera::rad 30))
                            (m:mrotation v:+vy+ (let ((time (get-time)))
@@ -69,6 +69,18 @@
                            (m:marr projection)))
   (gl:bind-vertex-array *sphere*)
   (gl:polygon-mode :front-and-back :fill)
+  (gl:draw-arrays :triangles 0 (* 3 (length (sphere:make-sphere 5))))
+  (gl:uniform-matrix-4fv (gl:get-uniform-location
+                          (slot-value *shader* 'shaders::program)
+                          "model")
+                         (m:marr
+                          (m:m*
+                           (m:mtranslation (v:vec3 -0.7 0 0))
+                           (m:mscaling (v:vec3 0.5 0.5 0.5))
+                           (m:mrotation v:+vx+ (camera::rad 30))
+                           (m:mrotation v:+vy+ (let ((time (get-time)))
+                                                 (* 30
+                                                    (camera::rad time)))))))
   (gl:draw-arrays :triangles 0 (* 3 (length (sphere:make-sphere 5))))
   (gl:bind-vertex-array 0)
   (gl:bind-texture :texture-cube-map 0)
