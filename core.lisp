@@ -47,9 +47,12 @@
   (gl:uniform-matrix-4fv (gl:get-uniform-location
                           (slot-value *shader* 'shaders::program)
                           "model")
-                         (m:marr (m:mrotation v:+vy+ (let ((time (get-time)))
-                                                       (* 30
-                                                          (camera::rad time))))))
+                         (m:marr
+                          (m:m*
+                           (m:mrotation v:+vx+ (camera::rad 30))
+                           (m:mrotation v:+vy+ (let ((time (get-time)))
+                                                 (* 30
+                                                    (camera::rad time)))))))
   (let ((view (camera:view-matrix *camera*))
         (projection (m:mperspective (slot-value *camera* 'camera::zoom)
                                     (/ 500 500)
@@ -91,12 +94,30 @@
                                  :negy "./negy.png"
                                  :negz "./negz.png")))
 
+(defgeneric handle-event (event-type event))
+
+(defmethod handle-event ((event-type t) event)
+  (format t "~S~%" event-type))
+
+(defmethod handle-event ((event-type (eql :keydown)) event)
+  
+  (format t "Key down: ~S~%" event-type))
+
+(defmethod handle-event ((event-type (eql :keyup)) event)
+  (format t "Key up: ~S~%" event-type))
+
+(defun handle-input ()
+  (sdl2:with-sdl-event (event)
+    (loop while (plusp (sdl2:next-event event))
+          do (handle-event (sdl2:get-event-type event) event))))
+
 (defun mainloop ()
   ;; (sdl2:gl-make-current *window* *opengl-context*)
-  (init)
+  ;; (init)
   (loop
-    (render)
-    (sleep 0.16)))
+   (handle-input)
+   (render)
+   (sleep 0.016)))
   
 
 (defvar *render-thread* nil)
