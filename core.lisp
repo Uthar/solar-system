@@ -101,12 +101,12 @@
                                 :vert "glsl/model-view-projection.vert"
                                 :frag "glsl/cubemap.frag"))
   (setf *cubemap* (make-instance 'cubemap::cubemap
-                                 :posx "./posx.png"
-                                 :posy "./posy.png"
-                                 :posz "./posz.png"
-                                 :negx "./negx.png"
-                                 :negy "./negy.png"
-                                 :negz "./negz.png")))
+                                 :posx "./textures/earth/posx.png"
+                                 :posy "./textures/earth/posy.png"
+                                 :posz "./textures/earth/posz.png"
+                                 :negx "./textures/earth/negx.png"
+                                 :negy "./textures/earth/negy.png"
+                                 :negz "./textures/earth/negz.png")))
 
 (defgeneric handle-event (event-type event))
 
